@@ -26,5 +26,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+protected:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
+	class USphereComponent* AgroRange;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
+	USphereComponent* StopRange;
 
 };
