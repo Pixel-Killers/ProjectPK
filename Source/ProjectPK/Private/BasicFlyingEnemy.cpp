@@ -14,12 +14,17 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 {
 	detectRange = CreateDefaultSubobject<USphereComponent>(TEXT("Detection Range"));
 	detectRange->SetupAttachment(GetRootComponent());
-	detectRange->SetSphereRadius(200.f);
+	detectRange->SetSphereRadius(300.f);
 	detectRange->SetGenerateOverlapEvents(true);
+
+	attackRange = CreateDefaultSubobject<USphereComponent>(TEXT("Attack Range"));
+	attackRange->SetupAttachment(GetRootComponent());
+	attackRange->SetSphereRadius(150.f);
+	attackRange->SetGenerateOverlapEvents(true);
 
 	target = nullptr;
 	bIsMovingRight = false;
-	bIsInterpolating = false;
+	bIsMovingBack = false;
 	bIsTimerSet = false;
 	patrolEndX = 1200.f;
 	interpSpeed = 4.f;
@@ -31,8 +36,12 @@ void ABasicFlyingEnemy::BeginPlay()
 	Super::BeginPlay();
 	initLocation = GetActorLocation();
 	locationBeforeChase = initLocation;
-	detectRange->OnComponentBeginOverlap.AddDynamic(this, &ABasicFlyingEnemy::OnOverlapBegin);
-	detectRange->OnComponentEndOverlap.AddDynamic(this, &ABasicFlyingEnemy::OnOverlapEnd);
+
+	detectRange->OnComponentBeginOverlap.AddDynamic(this, &ABasicFlyingEnemy::OnDetectionOverlapBegin);
+	detectRange->OnComponentEndOverlap.AddDynamic(this, &ABasicFlyingEnemy::OnDetectionOverlapEnd);
+
+	attackRange->OnComponentBeginOverlap.AddDynamic(this, &ABasicFlyingEnemy::OnAttackOverlapBegin);
+	attackRange->OnComponentEndOverlap.AddDynamic(this, &ABasicFlyingEnemy::OnAttackOverlapEnd);
 }
 
 void ABasicFlyingEnemy::Tick(float DeltaSeconds)
@@ -41,9 +50,9 @@ void ABasicFlyingEnemy::Tick(float DeltaSeconds)
 	MoveToTarget(DeltaSeconds);
 }
 
-void ABasicFlyingEnemy::OnOverlapBegin(UPrimitiveComponent* OverlappedComponentclass, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ABasicFlyingEnemy::OnDetectionOverlapBegin(UPrimitiveComponent* OverlappedComponentclass, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor && OtherActor != this && !bIsInterpolating) //Uztikrinam, kad kitas aktorius validus ir ne tas pats kaip dabar.
+	if (OtherActor && OtherActor != this && !bIsMovingBack) //Uztikrinam, kad kitas aktorius validus ir ne tas pats kaip dabar.
 	{
 		AMainCharacter* player = Cast<AMainCharacter>(OtherActor);
 		if (player) //Jei pavyko pacastinti i zaidejo klase
@@ -54,7 +63,7 @@ void ABasicFlyingEnemy::OnOverlapBegin(UPrimitiveComponent* OverlappedComponentc
 	}
 }
 
-void ABasicFlyingEnemy::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void ABasicFlyingEnemy::OnDetectionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if(target) target = nullptr;
 	GetMovementComponent()->StopActiveMovement();
@@ -73,35 +82,37 @@ void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 	else //Jei tokio neturim patruliuosim
 	{
 		FVector currentLocation = GetActorLocation();
-		if (!FMath::IsNearlyEqual(currentLocation.Z, locationBeforeChase.Z, 1.f)) //Jei nesam tam paciam auksty
+		if (!FMath::IsNearlyEqual(currentLocation.Z, locationBeforeChase.Z, 5.f)) //Jei nesam tam paciam auksty
 		{
-			bIsInterpolating = true;
-			FVector interpVec = FMath::VInterpTo(currentLocation, locationBeforeChase, DeltaSeconds, interpSpeed);
-			SetActorLocation(interpVec);
-			UE_LOG(LogTemp, Warning, TEXT("Interpoliuojamas vektorius: %s"), *interpVec.ToString());
+			bIsMovingBack = true;
+			/*FVector interpVec = FMath::VInterpTo(currentLocation, locationBeforeChase, DeltaSeconds, interpSpeed);
+			SetActorLocation(interpVec);*/
+			FVector deltaVec = locationBeforeChase - currentLocation;
+			deltaVec.Normalize();
+			deltaVec /= 10;
+			AddMovementInput(deltaVec);
 		}
-		else if (bIsInterpolating && !bIsTimerSet) //Pasiruosiam pazymeti, kad nevyksta interpoliacija
+		//else bIsInterpolating = false;
+		else if (bIsMovingBack && !bIsTimerSet) //Pasiruosiam pazymeti, kad nevyksta interpoliacija
 		{
 			bIsTimerSet = true;
 			GetWorld()->GetTimerManager().SetTimer(negationTimer, this, &ABasicFlyingEnemy::NegateInterpolation, timerDelay, false);
 		}
 
 		//Vyks tik jei neinterpoliuojam i buvusia vieta
-		if (bIsMovingRight && !bIsInterpolating) //I desine
+		if (bIsMovingRight && !bIsMovingBack) //I desine
 		{
 			AddMovementInput(FVector(1.f, 0.f, 0.f));
 			FVector deltaVec = currentLocation - initLocation;
 			if (deltaVec.X >= patrolEndX) bIsMovingRight = false;
 			SetActorRotation(FRotator(0.f));
-			UE_LOG(LogTemp, Warning, TEXT("Juda i desine"));
 		}
-		else if (!bIsMovingRight && !bIsInterpolating) //I kaire
+		else if (!bIsMovingRight && !bIsMovingBack) //I kaire
 		{
 			AddMovementInput(FVector(-1.f, 0.f, 0.f));
 			FVector deltaVec = currentLocation - initLocation;
 			if (deltaVec.X <= 0) bIsMovingRight = true;
 			SetActorRotation(FRotator(0.f, 180.f, 0.f));
-			UE_LOG(LogTemp, Warning, TEXT("Juda i kaire"));
 		}
 	}
 }
@@ -109,7 +120,17 @@ void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 void ABasicFlyingEnemy::NegateInterpolation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Pakviestas delegtatas"));
-	bIsInterpolating = false;
+	bIsMovingBack = false;
 	bIsTimerSet = false;
+}
+
+void ABasicFlyingEnemy::OnAttackOverlapBegin(UPrimitiveComponent* OverlappedComponentclass, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+}
+
+void ABasicFlyingEnemy::OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+
 }
 
