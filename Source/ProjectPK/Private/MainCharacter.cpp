@@ -3,3 +3,14 @@
 
 #include "MainCharacter.h"
 
+AMainCharacter::AMainCharacter()
+{
+	MaxHealth = 100;
+}
+
+void AMainCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	CurrentHealth = MaxHealth;
+}
+

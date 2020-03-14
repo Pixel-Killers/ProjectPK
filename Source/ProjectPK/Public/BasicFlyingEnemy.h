@@ -41,7 +41,10 @@ protected:
     float interpSpeed; //Interpoliacijos greitis
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Movemement")
-    float timerDelay; //Uz kiek laiko paleisti negacijos timeri
+    float negationTimerDelay; //Uz kiek laiko paleisti interpoliacijos negacijos timeri
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Combat")
+    float attackTimerDelay; //Uz kiek laiko paleisti atakos negacijos timeri
 
 public:
     UFUNCTION()
@@ -57,15 +60,19 @@ public:
     void OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
     UFUNCTION()
-    void MoveToTarget(float DeltaSeconds);
+    void MoveToTarget(); //Apraso judejimo logika
 
     UFUNCTION()
     void NegateInterpolation(); //Skirtas nufalseinti interpoliacijos booli
+
+    UFUNCTION()
+    void Attack();
 
 private:
     FVector initLocation; //Pradine vieta, jam atsispawninus
     FVector locationBeforeChase; //Vieta pries pradedant vytis zaideja
     bool bIsMovingBack; //Ar grizta atgal
-    bool bIsTimerSet; //Ar timeris uzstatytas (kad amzinai nenusiresetintu)
-    FTimerHandle negationTimer; //I ka kaupiam timerio rezultatus
+    FTimerHandle negationTimer; //I ka kaupiam interpoliacijos timerio rezultatus
+    FTimerHandle attackTimer; //I ka kaupiam atakos timerio rezultatus
+    bool bIsAttacking; //Parodo ar priesas dabar atakos stadijoje
 };

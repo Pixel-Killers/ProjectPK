@@ -6,7 +6,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/PawnMovementComponent.h"
-#include "Math/UnrealMathUtility.h"
 #include "TimerManager.h"
 #include "MainCharacter.h"
 
@@ -25,10 +24,11 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 	target = nullptr;
 	bIsMovingRight = false;
 	bIsMovingBack = false;
-	bIsTimerSet = false;
+	bIsAttacking = false;
 	patrolEndX = 1200.f;
 	interpSpeed = 4.f;
-	timerDelay = 2.f;
+	negationTimerDelay = 2.f;
+	attackTimerDelay = 2.f;
 }
 
 void ABasicFlyingEnemy::BeginPlay()
@@ -47,7 +47,7 @@ void ABasicFlyingEnemy::BeginPlay()
 void ABasicFlyingEnemy::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	MoveToTarget(DeltaSeconds);
+	MoveToTarget();
 }
 
 void ABasicFlyingEnemy::OnDetectionOverlapBegin(UPrimitiveComponent* OverlappedComponentclass, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -69,9 +69,9 @@ void ABasicFlyingEnemy::OnDetectionOverlapEnd(UPrimitiveComponent* OverlappedCom
 	GetMovementComponent()->StopActiveMovement();
 }
 
-void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
+void ABasicFlyingEnemy::MoveToTarget()
 {
-	if (target) //Tik jei turim validu taikini, judesim link jo
+	if (target && !bIsAttacking) //Tik jei turim validu taikini, judesim link jo
 	{
 		FVector toNormalize = target->GetActorLocation() - this->GetActorLocation();
 		toNormalize.Normalize();
@@ -79,24 +79,20 @@ void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 		if(target->GetActorLocation().X < this->GetActorLocation().X) SetActorRotation(FRotator(0.f, 180.f, 0.f));
 		else SetActorRotation(FRotator(0.f)); //Nustatom, i kuria puse ziureti priesui
 	}
-	else //Jei tokio neturim patruliuosim
+	else if(!bIsAttacking) //Jei tokio neturim patruliuosim
 	{
 		FVector currentLocation = GetActorLocation();
 		if (!FMath::IsNearlyEqual(currentLocation.Z, locationBeforeChase.Z, 5.f)) //Jei nesam tam paciam auksty
 		{
 			bIsMovingBack = true;
-			/*FVector interpVec = FMath::VInterpTo(currentLocation, locationBeforeChase, DeltaSeconds, interpSpeed);
-			SetActorLocation(interpVec);*/
 			FVector deltaVec = locationBeforeChase - currentLocation;
 			deltaVec.Normalize();
-			deltaVec /= 10;
+			deltaVec /= 10; //TODO: Pakeisti sita vieta, kad butu galima is editoriaus nustatyti grizimo greiti
 			AddMovementInput(deltaVec);
 		}
-		//else bIsInterpolating = false;
-		else if (bIsMovingBack && !bIsTimerSet) //Pasiruosiam pazymeti, kad nevyksta interpoliacija
-		{
-			bIsTimerSet = true;
-			GetWorld()->GetTimerManager().SetTimer(negationTimer, this, &ABasicFlyingEnemy::NegateInterpolation, timerDelay, false);
+		else if (bIsMovingBack && !negationTimer.IsValid()) //Pasiruosiam pazymeti, kad nevyksta interpoliacija
+		{ //Norim tik vieno timerio
+			GetWorld()->GetTimerManager().SetTimer(negationTimer, this, &ABasicFlyingEnemy::NegateInterpolation, negationTimerDelay, false);
 		}
 
 		//Vyks tik jei neinterpoliuojam i buvusia vieta
@@ -119,18 +115,25 @@ void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 
 void ABasicFlyingEnemy::NegateInterpolation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Pakviestas delegtatas"));
 	bIsMovingBack = false;
-	bIsTimerSet = false;
+	GetWorldTimerManager().ClearTimer(negationTimer);
 }
 
 void ABasicFlyingEnemy::OnAttackOverlapBegin(UPrimitiveComponent* OverlappedComponentclass, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
+	bIsAttacking = true;
+	if(!attackTimer.IsValid()) //Norim tik vieno timerio
+		GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &ABasicFlyingEnemy::Attack, negationTimerDelay, true);
 }
 
 void ABasicFlyingEnemy::OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	bIsAttacking = false;
+	GetWorldTimerManager().ClearTimer(attackTimer); //Nebeloopinsim
+}
 
+void ABasicFlyingEnemy::Attack()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Ataka!"));
 }
 

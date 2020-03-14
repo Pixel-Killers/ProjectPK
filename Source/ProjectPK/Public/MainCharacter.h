@@ -13,5 +13,15 @@ UCLASS()
 class PROJECTPK_API AMainCharacter : public APaperCharacter
 {
 	GENERATED_BODY()
-	
+
+public:
+    AMainCharacter();
+    virtual void BeginPlay() override;
+
+protected:
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
+    int32 MaxHealth;
+
+    UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Stats")
+    int32 CurrentHealth;
 };
