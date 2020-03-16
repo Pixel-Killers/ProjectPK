@@ -26,9 +26,10 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 	bIsMovingBack = false;
 	bIsAttacking = false;
 	patrolEndX = 1200.f;
-	interpSpeed = 4.f;
+	returnSpeed = 4.f;
 	negationTimerDelay = 2.f;
 	attackTimerDelay = 2.f;
+	heightDifferenceAcceptance = 5.f;
 }
 
 void ABasicFlyingEnemy::BeginPlay()
@@ -47,7 +48,7 @@ void ABasicFlyingEnemy::BeginPlay()
 void ABasicFlyingEnemy::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	MoveToTarget();
+	MoveToTarget(DeltaSeconds);
 }
 
 void ABasicFlyingEnemy::OnDetectionOverlapBegin(UPrimitiveComponent* OverlappedComponentclass, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -57,7 +58,7 @@ void ABasicFlyingEnemy::OnDetectionOverlapBegin(UPrimitiveComponent* OverlappedC
 		AMainCharacter* player = Cast<AMainCharacter>(OtherActor);
 		if (player) //Jei pavyko pacastinti i zaidejo klase
 		{
-			locationBeforeChase = GetActorLocation();
+			if(!target) locationBeforeChase = GetActorLocation(); //ifas, kad neuzfiksuotu keliu vietu random, kai jau bus pasileides
 			target = player;
 		}
 	}
@@ -65,11 +66,15 @@ void ABasicFlyingEnemy::OnDetectionOverlapBegin(UPrimitiveComponent* OverlappedC
 
 void ABasicFlyingEnemy::OnDetectionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if(target) target = nullptr;
+	if (target)
+	{
+		target = nullptr;
+		bIsMovingBack = true; //TODO: isitikinti, kad sita vieta sitam bool'iui gera
+	}
 	GetMovementComponent()->StopActiveMovement();
 }
 
-void ABasicFlyingEnemy::MoveToTarget()
+void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 {
 	if (target && !bIsAttacking) //Tik jei turim validu taikini, judesim link jo
 	{
@@ -82,17 +87,36 @@ void ABasicFlyingEnemy::MoveToTarget()
 	else if(!bIsAttacking) //Jei tokio neturim patruliuosim
 	{
 		FVector currentLocation = GetActorLocation();
-		if (!FMath::IsNearlyEqual(currentLocation.Z, locationBeforeChase.Z, 5.f)) //Jei nesam tam paciam auksty
+		//if (!FMath::IsNearlyEqual(currentLocation.Z, locationBeforeChase.Z, heightDifferenceAcceptance)) //Jei nesam tam paciam auksty
+		//{
+		//	//bIsMovingBack = true; //TODO: Dar sita palikti
+		//	FVector deltaVec = locationBeforeChase - currentLocation;
+		//	deltaVec.Normalize(); //Pridejinesim mazas vertes
+		//	deltaVec *= returnSpeed * DeltaSeconds; //Priklauso nuo greicio ir zaidimo kokybes
+		//	AddMovementInput(deltaVec);
+		//}
+		//else if (bIsMovingBack && !negationTimer.IsValid()) //Pasiruosiam pazymeti, kad nevyksta interpoliacija
+		//{ //Norim tik vieno timerio
+		//	float distance = FVector::Dist(currentLocation, locationBeforeChase) / 10; //Dalinam, nes gaunam centimetrais
+		//	float timerDelay = distance / returnSpeed;
+		//	UE_LOG(LogTemp, Warning, TEXT("Laikas, kuri uztruksim: %f"), timerDelay);
+		//	GetWorldTimerManager().SetTimer(negationTimer, this, &ABasicFlyingEnemy::NegateInterpolation, timerDelay, false);
+		//}
+
+		if (!currentLocation.Equals(locationBeforeChase, heightDifferenceAcceptance)) //Jei nesam tam paciam auksty
 		{
-			bIsMovingBack = true;
+			if (bIsMovingBack && !negationTimer.IsValid()) //Pasiruosiam pazymeti, kad nevyksta interpoliacija
+			{ //Norim tik vieno timerio
+				float distance = FVector::Dist(currentLocation, locationBeforeChase) / 10; //Dalinam, nes gaunam centimetrais
+				float timerDelay = distance / returnSpeed;
+				UE_LOG(LogTemp, Warning, TEXT("Laikas, kuri uztruksim: %f"), timerDelay);
+				GetWorldTimerManager().SetTimer(negationTimer, this, &ABasicFlyingEnemy::NegateInterpolation, timerDelay, false);
+			}
+			//bIsMovingBack = true; //TODO: Dar sita palikti
 			FVector deltaVec = locationBeforeChase - currentLocation;
-			deltaVec.Normalize();
-			deltaVec /= 10; //TODO: Pakeisti sita vieta, kad butu galima is editoriaus nustatyti grizimo greiti
+			deltaVec.Normalize(); //Pridejinesim mazas vertes
+			deltaVec *= returnSpeed * DeltaSeconds; //Priklauso nuo greicio ir zaidimo kokybes
 			AddMovementInput(deltaVec);
-		}
-		else if (bIsMovingBack && !negationTimer.IsValid()) //Pasiruosiam pazymeti, kad nevyksta interpoliacija
-		{ //Norim tik vieno timerio
-			GetWorld()->GetTimerManager().SetTimer(negationTimer, this, &ABasicFlyingEnemy::NegateInterpolation, negationTimerDelay, false);
 		}
 
 		//Vyks tik jei neinterpoliuojam i buvusia vieta
@@ -123,7 +147,7 @@ void ABasicFlyingEnemy::OnAttackOverlapBegin(UPrimitiveComponent* OverlappedComp
 {
 	bIsAttacking = true;
 	if(!attackTimer.IsValid()) //Norim tik vieno timerio
-		GetWorld()->GetTimerManager().SetTimer(attackTimer, this, &ABasicFlyingEnemy::Attack, negationTimerDelay, true);
+		GetWorldTimerManager().SetTimer(attackTimer, this, &ABasicFlyingEnemy::Attack, attackTimerDelay, true);
 }
 
 void ABasicFlyingEnemy::OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
