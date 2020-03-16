@@ -38,13 +38,16 @@ protected:
     float patrolEndX; //Ribos X asyje, kiek judeti pasyviai pirmyn atgal
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Movemement")
-    float interpSpeed; //Interpoliacijos greitis
+    float returnSpeed; //Interpoliacijos greitis
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Movemement")
     float negationTimerDelay; //Uz kiek laiko paleisti interpoliacijos negacijos timeri
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Combat")
     float attackTimerDelay; //Uz kiek laiko paleisti atakos negacijos timeri
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Movemement")
+    float heightDifferenceAcceptance; //Uz kiek laiko paleisti atakos negacijos timeri
 
 public:
     UFUNCTION()
@@ -60,7 +63,7 @@ public:
     void OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
     UFUNCTION()
-    void MoveToTarget(); //Apraso judejimo logika
+    void MoveToTarget(float DeltaSeconds); //Apraso judejimo logika
 
     UFUNCTION()
     void NegateInterpolation(); //Skirtas nufalseinti interpoliacijos booli
