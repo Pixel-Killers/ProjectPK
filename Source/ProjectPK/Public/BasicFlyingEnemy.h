@@ -40,9 +40,6 @@ protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Movemement")
     float returnSpeed; //Interpoliacijos greitis
 
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Movemement")
-    float negationTimerDelay; //Uz kiek laiko paleisti interpoliacijos negacijos timeri
-
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Combat")
     float attackTimerDelay; //Uz kiek laiko paleisti atakos negacijos timeri
 
