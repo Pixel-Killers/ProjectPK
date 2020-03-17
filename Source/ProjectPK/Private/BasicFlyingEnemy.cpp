@@ -27,7 +27,6 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 	bIsAttacking = false;
 	patrolEndX = 1200.f;
 	returnSpeed = 4.f;
-	negationTimerDelay = 2.f;
 	attackTimerDelay = 2.f;
 	heightDifferenceAcceptance = 5.f;
 }
@@ -109,7 +108,6 @@ void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 			{ //Norim tik vieno timerio
 				float distance = FVector::Dist(currentLocation, locationBeforeChase) / 10; //Dalinam, nes gaunam centimetrais
 				float timerDelay = distance / returnSpeed;
-				UE_LOG(LogTemp, Warning, TEXT("Laikas, kuri uztruksim: %f"), timerDelay);
 				GetWorldTimerManager().SetTimer(negationTimer, this, &ABasicFlyingEnemy::NegateInterpolation, timerDelay, false);
 			}
 			//bIsMovingBack = true; //TODO: Dar sita palikti
