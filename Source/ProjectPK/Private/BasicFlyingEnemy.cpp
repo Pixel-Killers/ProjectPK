@@ -29,6 +29,7 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 	returnSpeed = 4.f;
 	attackTimerDelay = 2.f;
 	heightDifferenceAcceptance = 5.f;
+	patrolSpeed = 150.f;
 }
 
 void ABasicFlyingEnemy::BeginPlay()
@@ -120,14 +121,14 @@ void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 		//Vyks tik jei neinterpoliuojam i buvusia vieta
 		if (bIsMovingRight && !bIsMovingBack) //I desine
 		{
-			AddMovementInput(FVector(1.f, 0.f, 0.f));
+			AddMovementInput(FVector(1.f, 0.f, 0.f) * patrolSpeed * DeltaSeconds);
 			FVector deltaVec = currentLocation - initLocation;
 			if (deltaVec.X >= patrolEndX) bIsMovingRight = false;
 			SetActorRotation(FRotator(0.f));
 		}
 		else if (!bIsMovingRight && !bIsMovingBack) //I kaire
 		{
-			AddMovementInput(FVector(-1.f, 0.f, 0.f));
+			AddMovementInput(FVector(-1.f, 0.f, 0.f) * patrolSpeed * DeltaSeconds);
 			FVector deltaVec = currentLocation - initLocation;
 			if (deltaVec.X <= 0) bIsMovingRight = true;
 			SetActorRotation(FRotator(0.f, 180.f, 0.f));
