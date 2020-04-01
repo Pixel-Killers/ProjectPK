@@ -11,6 +11,7 @@
 
 ABasicFlyingEnemy::ABasicFlyingEnemy()
 {
+	// Spheres
 	detectRange = CreateDefaultSubobject<USphereComponent>(TEXT("Detection Range"));
 	detectRange->SetupAttachment(GetRootComponent());
 	detectRange->SetSphereRadius(300.f);
@@ -21,6 +22,7 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 	attackRange->SetSphereRadius(150.f);
 	attackRange->SetGenerateOverlapEvents(true);
 
+	// Member variable init
 	target = nullptr;
 	bIsMovingRight = false;
 	bIsMovingBack = false;
