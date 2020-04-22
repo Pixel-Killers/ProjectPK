@@ -52,6 +52,9 @@ protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Combat")
     int32 BaseDamage;
 
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Combat")
+    bool bIsAttacking; //Parodo ar priesas dabar atakos stadijoje
+
 public:
     UFUNCTION()
     void OnDetectionOverlapBegin(class UPrimitiveComponent* OverlappedComponentclass, class AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -80,5 +83,4 @@ private:
     bool bIsMovingBack; //Ar grizta atgal
     FTimerHandle negationTimer; //I ka kaupiam interpoliacijos timerio rezultatus
     FTimerHandle attackTimer; //I ka kaupiam atakos timerio rezultatus
-    bool bIsAttacking; //Parodo ar priesas dabar atakos stadijoje
 };

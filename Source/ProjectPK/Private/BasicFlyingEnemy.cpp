@@ -162,8 +162,8 @@ void ABasicFlyingEnemy::Attack()
 {
 	if (target)
 	{
-		target->SetCurrentHealth(target->GetCurrentHealth() - BaseDamage);
-		UE_LOG(LogTemp, Warning, TEXT("Zaidejui liko: %d HP"), target->GetCurrentHealth());
+		//target->SetCurrentHealth(target->GetCurrentHealth() - BaseDamage);
+		//UE_LOG(LogTemp, Warning, TEXT("Zaidejui liko: %d HP"), target->GetCurrentHealth());
 	}
 }
 
