@@ -52,6 +52,10 @@ void ABasicFlyingEnemy::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	MoveToTarget(DeltaSeconds);
+	if (target)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Taikinio vieta: %s"), *target->GetActorLocation().ToString());
+	}
 }
 
 void ABasicFlyingEnemy::OnDetectionOverlapBegin(UPrimitiveComponent* OverlappedComponentclass, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -79,11 +83,14 @@ void ABasicFlyingEnemy::OnDetectionOverlapEnd(UPrimitiveComponent* OverlappedCom
 
 void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 {
-	if (target && !bIsAttacking) //Tik jei turim validu taikini, judesim link jo
+	if (target) //Tik jei turim validu taikini, judesim link jo
 	{
-		FVector toNormalize = target->GetActorLocation() - this->GetActorLocation();
-		toNormalize.Normalize();
-		AddMovementInput(toNormalize);
+		if (!bIsAttacking)
+		{
+			FVector toNormalize = target->GetActorLocation() - this->GetActorLocation();
+			toNormalize.Normalize();
+			AddMovementInput(toNormalize);
+		}
 		if(target->GetActorLocation().X < this->GetActorLocation().X) SetActorRotation(FRotator(0.f, 180.f, 0.f));
 		else SetActorRotation(FRotator(0.f)); //Nustatom, i kuria puse ziureti priesui
 	}
@@ -147,6 +154,15 @@ void ABasicFlyingEnemy::NegateInterpolation()
 
 void ABasicFlyingEnemy::OnAttackOverlapBegin(UPrimitiveComponent* OverlappedComponentclass, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor && OtherActor != this && !bIsMovingBack) //Uztikrinam, kad kitas aktorius validus ir ne tas pats kaip dabar.
+	{
+		AMainCharacter* player = Cast<AMainCharacter>(OtherActor);
+		if (player) //Jei pavyko pacastinti i zaidejo klase
+		{
+			//if (!target) locationBeforeChase = GetActorLocation(); //ifas, kad neuzfiksuotu keliu vietu random, kai jau bus pasileides
+			target = player;
+		}
+	}
 	bIsAttacking = true;
 	if(!attackTimer.IsValid()) //Norim tik vieno timerio
 		GetWorldTimerManager().SetTimer(attackTimer, this, &ABasicFlyingEnemy::Attack, attackTimerDelay, true);
