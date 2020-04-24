@@ -54,6 +54,7 @@ void ABasicFlyingEnemy::Tick(float DeltaSeconds)
 	MoveToTarget(DeltaSeconds);
 	if (target)
 	{
+		targetLocation = target->GetActorLocation();
 		UE_LOG(LogTemp, Warning, TEXT("Taikinio vieta: %s"), *target->GetActorLocation().ToString());
 	}
 }
@@ -73,12 +74,17 @@ void ABasicFlyingEnemy::OnDetectionOverlapBegin(UPrimitiveComponent* OverlappedC
 
 void ABasicFlyingEnemy::OnDetectionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (target)
+	if (OtherActor && OtherActor != this)
 	{
-		target = nullptr;
-		bIsMovingBack = true; //TODO: isitikinti, kad sita vieta sitam bool'iui gera
+		AMainCharacter* player = Cast<AMainCharacter>(OtherActor);
+		if (player && target && !bIsAttacking)
+		{
+			target = nullptr;
+			bIsMovingBack = true; //TODO: isitikinti, kad sita vieta sitam bool'iui gera
+			UE_LOG(LogTemp, Warning, TEXT("DETEKCIJOS OVERLAPO PABAIGA!!!!"));
+		}
+		GetMovementComponent()->StopActiveMovement();
 	}
-	GetMovementComponent()->StopActiveMovement();
 }
 
 void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
@@ -161,17 +167,24 @@ void ABasicFlyingEnemy::OnAttackOverlapBegin(UPrimitiveComponent* OverlappedComp
 		{
 			//if (!target) locationBeforeChase = GetActorLocation(); //ifas, kad neuzfiksuotu keliu vietu random, kai jau bus pasileides
 			target = player;
+			bIsAttacking = true;
+			if (!attackTimer.IsValid()) //Norim tik vieno timerio
+				GetWorldTimerManager().SetTimer(attackTimer, this, &ABasicFlyingEnemy::Attack, attackTimerDelay, true);
 		}
 	}
-	bIsAttacking = true;
-	if(!attackTimer.IsValid()) //Norim tik vieno timerio
-		GetWorldTimerManager().SetTimer(attackTimer, this, &ABasicFlyingEnemy::Attack, attackTimerDelay, true);
 }
 
 void ABasicFlyingEnemy::OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	bIsAttacking = false;
-	GetWorldTimerManager().ClearTimer(attackTimer); //Nebeloopinsim
+	if (OtherActor && OtherActor != this && !bIsMovingBack)
+	{
+		AMainCharacter* player = Cast<AMainCharacter>(OtherActor);
+		if (player) //Jei pavyko pacastinti i zaidejo klase
+		{
+			bIsAttacking = false;
+			GetWorldTimerManager().ClearTimer(attackTimer); //Nebeloopinsim
+		}
+	}
 }
 
 void ABasicFlyingEnemy::Attack()

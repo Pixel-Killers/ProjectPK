@@ -31,6 +31,9 @@ protected:
     UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "CustomAI | Combat")
     class AMainCharacter* target; //Veikejas, kuri vejames
 
+    UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "CustomAI | Combat")
+    FVector targetLocation;
+
     UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "CustomAI | Movemement")
     bool bIsMovingRight; //Nustato krypti judeti i kaire ar desine
 
