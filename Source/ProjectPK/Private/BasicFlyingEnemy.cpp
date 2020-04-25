@@ -82,8 +82,8 @@ void ABasicFlyingEnemy::OnDetectionOverlapEnd(UPrimitiveComponent* OverlappedCom
 			target = nullptr;
 			bIsMovingBack = true; //TODO: isitikinti, kad sita vieta sitam bool'iui gera
 			UE_LOG(LogTemp, Warning, TEXT("DETEKCIJOS OVERLAPO PABAIGA!!!!"));
+			GetMovementComponent()->StopActiveMovement();
 		}
-		GetMovementComponent()->StopActiveMovement();
 	}
 }
 
