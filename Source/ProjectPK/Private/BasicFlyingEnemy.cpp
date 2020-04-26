@@ -32,6 +32,7 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 	attackTimerDelay = 2.f;
 	heightDifferenceAcceptance = 5.f;
 	patrolSpeed = 150.f;
+	BaseDamage = 20;
 }
 
 void ABasicFlyingEnemy::BeginPlay()
@@ -159,6 +160,10 @@ void ABasicFlyingEnemy::OnAttackOverlapEnd(UPrimitiveComponent* OverlappedCompon
 
 void ABasicFlyingEnemy::Attack()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Ataka!"));
+	if (target)
+	{
+		target->SetCurrentHealth(target->GetCurrentHealth() - BaseDamage);
+		UE_LOG(LogTemp, Warning, TEXT("Zaidejui liko: %d HP"), target->GetCurrentHealth());
+	}
 }
 

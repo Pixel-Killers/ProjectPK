@@ -24,4 +24,8 @@ protected:
 
     UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Stats")
     int32 CurrentHealth;
+
+public:
+    int32 GetCurrentHealth() const;
+    void SetCurrentHealth(int32 Health);
 };
