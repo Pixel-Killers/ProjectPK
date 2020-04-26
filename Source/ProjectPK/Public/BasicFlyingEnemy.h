@@ -31,6 +31,9 @@ protected:
     UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "CustomAI | Combat")
     class AMainCharacter* target; //Veikejas, kuri vejames
 
+    UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "CustomAI | Combat")
+    FVector targetLocation;
+
     UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "CustomAI | Movemement")
     bool bIsMovingRight; //Nustato krypti judeti i kaire ar desine
 
@@ -51,6 +54,9 @@ protected:
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Combat")
     int32 BaseDamage;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Combat")
+    bool bIsAttacking; //Parodo ar priesas dabar atakos stadijoje
 
 public:
     UFUNCTION()
@@ -80,5 +86,4 @@ private:
     bool bIsMovingBack; //Ar grizta atgal
     FTimerHandle negationTimer; //I ka kaupiam interpoliacijos timerio rezultatus
     FTimerHandle attackTimer; //I ka kaupiam atakos timerio rezultatus
-    bool bIsAttacking; //Parodo ar priesas dabar atakos stadijoje
 };
