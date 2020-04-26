@@ -14,3 +14,13 @@ void AMainCharacter::BeginPlay()
 	CurrentHealth = MaxHealth;
 }
 
+int32 AMainCharacter::GetCurrentHealth() const
+{
+	return CurrentHealth;
+}
+
+void AMainCharacter::SetCurrentHealth(int32 Health)
+{
+	CurrentHealth = Health;
+}
+
