@@ -25,7 +25,15 @@ protected:
     UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Stats")
     int32 CurrentHealth;
 
-public:
-    int32 GetCurrentHealth() const;
-    void SetCurrentHealth(int32 Health);
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
+    float DefensePercent;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
+    float MovementSpeed;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
+    int32 Damage;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
+    float AttackSpeed;
 };

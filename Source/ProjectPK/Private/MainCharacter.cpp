@@ -6,21 +6,15 @@
 AMainCharacter::AMainCharacter()
 {
 	MaxHealth = 100;
+	DefensePercent = 0.f;
+	MovementSpeed = 300.f;
+	Damage = 20;
+	AttackSpeed = 2.f;
 }
 
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	CurrentHealth = MaxHealth;
-}
-
-int32 AMainCharacter::GetCurrentHealth() const
-{
-	return CurrentHealth;
-}
-
-void AMainCharacter::SetCurrentHealth(int32 Health)
-{
-	CurrentHealth = Health;
 }
 

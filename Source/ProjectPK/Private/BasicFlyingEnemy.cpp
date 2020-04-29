@@ -33,6 +33,7 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 	heightDifferenceAcceptance = 5.f;
 	patrolSpeed = 150.f;
 	BaseDamage = 20;
+	MaxHealth = 100;
 }
 
 void ABasicFlyingEnemy::BeginPlay()
@@ -46,6 +47,8 @@ void ABasicFlyingEnemy::BeginPlay()
 
 	attackRange->OnComponentBeginOverlap.AddDynamic(this, &ABasicFlyingEnemy::OnAttackOverlapBegin);
 	attackRange->OnComponentEndOverlap.AddDynamic(this, &ABasicFlyingEnemy::OnAttackOverlapEnd);
+
+	CurrentHealth = MaxHealth;
 }
 
 void ABasicFlyingEnemy::Tick(float DeltaSeconds)
@@ -194,5 +197,11 @@ void ABasicFlyingEnemy::Attack()
 		//target->SetCurrentHealth(target->GetCurrentHealth() - BaseDamage);
 		//UE_LOG(LogTemp, Warning, TEXT("Zaidejui liko: %d HP"), target->GetCurrentHealth());
 	}
+}
+
+void ABasicFlyingEnemy::TakeDamage(int32 Damage)
+{
+	CurrentHealth -= Damage;
+	if (CurrentHealth <= 0) Destroy();
 }
 
