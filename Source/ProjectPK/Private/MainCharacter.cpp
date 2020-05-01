@@ -6,9 +6,8 @@
 AMainCharacter::AMainCharacter()
 {
 	MaxHealth = 100;
-	DefensePercent = 0.f;
-	MovementSpeed = 300.f;
-	Damage = 20;
+	DefensePercent = 0.1f;
+	BaseDamage = 20;
 	AttackSpeed = 2.f;
 }
 
@@ -16,5 +15,10 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	CurrentHealth = MaxHealth;
+}
+
+void AMainCharacter::TakeDamage(int Damage)
+{
+	CurrentHealth -= Damage - Damage * DefensePercent;
 }
 

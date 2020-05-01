@@ -29,11 +29,12 @@ protected:
     float DefensePercent;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
-    float MovementSpeed;
-
-    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
-    int32 Damage;
+    int32 BaseDamage;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
     float AttackSpeed;
+
+public:
+    UFUNCTION(BlueprintCallable, Category = "Combat")
+    void TakeDamage(int Damage);
 };
