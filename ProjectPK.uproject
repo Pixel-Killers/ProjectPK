@@ -28,6 +28,10 @@
 				"Mac",
 				"Linux"
 			]
+		},
+		{
+			"Name": "ProceduralDungeon",
+			"Enabled": true
 		}
 	]
 }
