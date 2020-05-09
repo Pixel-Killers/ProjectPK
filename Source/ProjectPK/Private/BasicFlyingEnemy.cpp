@@ -64,10 +64,11 @@ void ABasicFlyingEnemy::Tick(float DeltaSeconds)
 
 void ABasicFlyingEnemy::OnDetectionOverlapBegin(UPrimitiveComponent* OverlappedComponentclass, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor && OtherActor != this && !bIsMovingBack) //Uztikrinam, kad kitas aktorius validus ir ne tas pats kaip dabar.
+	if (OtherActor && OtherActor != this && OtherComp && !bIsMovingBack) //Uztikrinam, kad kitas aktorius validus ir ne tas pats kaip dabar.
 	{
 		AMainCharacter* player = Cast<AMainCharacter>(OtherActor);
-		if (player) //Jei pavyko pacastinti i zaidejo klase
+		UCapsuleComponent* component = Cast<UCapsuleComponent>(OtherComp);
+		if (player && component) //Jei pavyko pacastinti i zaidejo klase
 		{
 			if(!target) locationBeforeChase = GetActorLocation(); //ifas, kad neuzfiksuotu keliu vietu random, kai jau bus pasileides
 			target = player;
@@ -77,10 +78,11 @@ void ABasicFlyingEnemy::OnDetectionOverlapBegin(UPrimitiveComponent* OverlappedC
 
 void ABasicFlyingEnemy::OnDetectionOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor && OtherActor != this)
+	if (OtherActor && OtherActor != this && OtherComp)
 	{
 		AMainCharacter* player = Cast<AMainCharacter>(OtherActor);
-		if (player && target && !bIsAttacking)
+		UCapsuleComponent* component = Cast<UCapsuleComponent>(OtherComp);
+		if (player && component && target && !bIsAttacking)
 		{
 			target = nullptr;
 			bIsMovingBack = true; //TODO: isitikinti, kad sita vieta sitam bool'iui gera
@@ -163,10 +165,11 @@ void ABasicFlyingEnemy::NegateInterpolation()
 
 void ABasicFlyingEnemy::OnAttackOverlapBegin(UPrimitiveComponent* OverlappedComponentclass, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor && OtherActor != this && !bIsMovingBack) //Uztikrinam, kad kitas aktorius validus ir ne tas pats kaip dabar.
+	if (OtherActor && OtherActor != this && OtherComp && !bIsMovingBack) //Uztikrinam, kad kitas aktorius validus ir ne tas pats kaip dabar.
 	{
 		AMainCharacter* player = Cast<AMainCharacter>(OtherActor);
-		if (player) //Jei pavyko pacastinti i zaidejo klase
+		UCapsuleComponent* component = Cast<UCapsuleComponent>(OtherComp);
+		if (player && component) //Jei pavyko pacastinti i zaidejo klase
 		{
 			//if (!target) locationBeforeChase = GetActorLocation(); //ifas, kad neuzfiksuotu keliu vietu random, kai jau bus pasileides
 			target = player;
@@ -179,10 +182,11 @@ void ABasicFlyingEnemy::OnAttackOverlapBegin(UPrimitiveComponent* OverlappedComp
 
 void ABasicFlyingEnemy::OnAttackOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (OtherActor && OtherActor != this && !bIsMovingBack)
+	if (OtherActor && OtherActor != this && OtherComp && !bIsMovingBack)
 	{
 		AMainCharacter* player = Cast<AMainCharacter>(OtherActor);
-		if (player) //Jei pavyko pacastinti i zaidejo klase
+		UCapsuleComponent* component = Cast<UCapsuleComponent>(OtherComp);
+		if (player && component) //Jei pavyko pacastinti i zaidejo klase
 		{
 			bIsAttacking = false;
 			GetWorldTimerManager().ClearTimer(attackTimer); //Nebeloopinsim
