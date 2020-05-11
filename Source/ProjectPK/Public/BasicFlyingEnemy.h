@@ -58,6 +58,12 @@ protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Combat")
     bool bIsAttacking; //Parodo ar priesas dabar atakos stadijoje
 
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CustomAI | Stats")
+    int32 MaxHealth;
+
+    UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "CustomAI | Stats")
+    int32 CurrentHealth;
+
 public:
     UFUNCTION()
     void OnDetectionOverlapBegin(class UPrimitiveComponent* OverlappedComponentclass, class AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -76,6 +82,9 @@ public:
 
     UFUNCTION()
     void NegateInterpolation(); //Skirtas nufalseinti interpoliacijos booli
+
+    UFUNCTION(BlueprintCallable, Category = "CustomAI | Combat")
+    void TakeDamage(int32 Damage);
 
     UFUNCTION()
     void Attack();
