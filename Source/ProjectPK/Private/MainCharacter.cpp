@@ -6,6 +6,9 @@
 AMainCharacter::AMainCharacter()
 {
 	MaxHealth = 100;
+	DefensePercent = 0.1f;
+	BaseDamage = 20;
+	AttackSpeed = 2.f;
 }
 
 void AMainCharacter::BeginPlay()
@@ -14,13 +17,8 @@ void AMainCharacter::BeginPlay()
 	CurrentHealth = MaxHealth;
 }
 
-int32 AMainCharacter::GetCurrentHealth() const
+void AMainCharacter::TakeDamage(int Damage)
 {
-	return CurrentHealth;
-}
-
-void AMainCharacter::SetCurrentHealth(int32 Health)
-{
-	CurrentHealth = Health;
+	CurrentHealth -= Damage - Damage * DefensePercent;
 }
 
