@@ -34,6 +34,7 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 	patrolSpeed = 150.f;
 	BaseDamage = 20;
 	MaxHealth = 100;
+	CurrencyLoot = 15;
 }
 
 void ABasicFlyingEnemy::BeginPlay()
@@ -203,9 +204,13 @@ void ABasicFlyingEnemy::Attack()
 	}
 }
 
-void ABasicFlyingEnemy::TakeDamage(int32 Damage)
+void ABasicFlyingEnemy::TakeDamage(AMainCharacter* Dealer)
 {
-	CurrentHealth -= Damage;
-	if (CurrentHealth <= 0) Destroy();
+	CurrentHealth -= Dealer->GetBaseDamage();
+	if (CurrentHealth <= 0)
+	{
+		Dealer->SetCurrency(Dealer->GetCurrency() + CurrencyLoot);
+		Destroy();
+	}
 }
 
