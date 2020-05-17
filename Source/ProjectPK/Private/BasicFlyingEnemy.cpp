@@ -95,6 +95,11 @@ void ABasicFlyingEnemy::OnDetectionOverlapEnd(UPrimitiveComponent* OverlappedCom
 
 void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 {
+	FVector currentLocation = GetActorLocation();
+	if (currentLocation.Y != 0)
+	{
+		SetActorLocation(FVector(currentLocation.X, 0.f, currentLocation.Z));
+	}
 	if (target) //Tik jei turim validu taikini, judesim link jo
 	{
 		if (!bIsAttacking)
@@ -108,7 +113,6 @@ void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 	}
 	else if(!bIsAttacking) //Jei tokio neturim patruliuosim
 	{
-		FVector currentLocation = GetActorLocation();
 		//if (!FMath::IsNearlyEqual(currentLocation.Z, locationBeforeChase.Z, heightDifferenceAcceptance)) //Jei nesam tam paciam auksty
 		//{
 		//	//bIsMovingBack = true; //TODO: Dar sita palikti
