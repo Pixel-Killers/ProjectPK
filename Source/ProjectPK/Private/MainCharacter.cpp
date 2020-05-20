@@ -5,11 +5,17 @@
 
 AMainCharacter::AMainCharacter()
 {
+	// Active stats
 	MaxHealth = 100;
 	DefensePercent = 0.1f;
 	BaseDamage = 20;
 	AttackSpeed = 2.f;
 	Currency = 0;
+
+	// Base stats (for resetting)
+	InitDefensePercent = 0.1f;
+	InitBaseDamage = 20;
+	InitAttackSpeed = 2.f;
 }
 
 void AMainCharacter::BeginPlay()

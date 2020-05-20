@@ -35,6 +35,15 @@ protected:
     float AttackSpeed;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
+    float InitDefensePercent;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
+    int32 InitBaseDamage;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
+    float InitAttackSpeed;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
     int32 Currency;
 
 public:
