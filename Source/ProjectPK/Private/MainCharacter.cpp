@@ -18,9 +18,10 @@ void AMainCharacter::BeginPlay()
 	CurrentHealth = MaxHealth;
 }
 
-void AMainCharacter::TakeDamage(int Damage)
+bool AMainCharacter::TakeDamage(int Damage)
 {
-	CurrentHealth -= Damage - Damage * DefensePercent;
+	CurrentHealth -= Damage - Damage * FMath::Clamp(DefensePercent, 0.f, 1.f);
+	return CurrentHealth <= 0;
 }
 
 int32 AMainCharacter::GetBaseDamage() const

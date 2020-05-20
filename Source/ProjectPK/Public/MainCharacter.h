@@ -39,7 +39,7 @@ protected:
 
 public:
     UFUNCTION(BlueprintCallable, Category = "Combat")
-    void TakeDamage(int Damage);
+    bool TakeDamage(int Damage);
 
     int32 GetBaseDamage() const;
     int32 GetCurrency() const;
