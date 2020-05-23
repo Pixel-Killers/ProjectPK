@@ -34,7 +34,14 @@ protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
     float AttackSpeed;
 
+    UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Stats")
+    int32 Currency;
+
 public:
     UFUNCTION(BlueprintCallable, Category = "Combat")
     void TakeDamage(int Damage);
+
+    int32 GetBaseDamage() const;
+    int32 GetCurrency() const;
+    void SetCurrency(int32 CurrToSet);
 };
