@@ -21,15 +21,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "MegascansPlugin",
-			"Enabled": true,
-			"SupportedTargetPlatforms": [
-				"Win64",
-				"Mac",
-				"Linux"
-			]
-		},
-		{
 			"Name": "ProceduralDungeon",
 			"Enabled": true
 		},
@@ -48,6 +39,15 @@
 		{
 			"Name": "RuntimeTests",
 			"Enabled": true
+		},
+		{
+			"Name": "MegascansPlugin",
+			"Enabled": true,
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Mac",
+				"Linux"
+			]
 		}
 	]
 }

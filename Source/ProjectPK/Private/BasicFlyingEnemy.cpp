@@ -55,11 +55,14 @@ void ABasicFlyingEnemy::BeginPlay()
 void ABasicFlyingEnemy::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	MoveToTarget(DeltaSeconds);
-	if (target)
+	if (CurrentHealth > 0)
 	{
-		targetLocation = target->GetActorLocation();
-		UE_LOG(LogTemp, Warning, TEXT("Taikinio vieta: %s"), *target->GetActorLocation().ToString());
+		MoveToTarget(DeltaSeconds);
+		if (target)
+		{
+			targetLocation = target->GetActorLocation();
+			//UE_LOG(LogTemp, Warning, TEXT("Taikinio vieta: %s"), *target->GetActorLocation().ToString());
+		}
 	}
 }
 
@@ -208,13 +211,13 @@ void ABasicFlyingEnemy::Attack()
 	}
 }
 
-void ABasicFlyingEnemy::TakeDamage(AMainCharacter* Dealer)
+bool ABasicFlyingEnemy::TakeDamage(AMainCharacter* Dealer)
 {
 	CurrentHealth -= Dealer->GetBaseDamage();
 	if (CurrentHealth <= 0)
 	{
 		Dealer->SetCurrency(Dealer->GetCurrency() + CurrencyLoot);
-		Destroy();
 	}
+	return CurrentHealth <= 0;
 }
 
