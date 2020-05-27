@@ -34,6 +34,7 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 	patrolSpeed = 150.f;
 	BaseDamage = 20;
 	MaxHealth = 100;
+	CurrencyLoot = 15;
 }
 
 void ABasicFlyingEnemy::BeginPlay()
@@ -94,6 +95,11 @@ void ABasicFlyingEnemy::OnDetectionOverlapEnd(UPrimitiveComponent* OverlappedCom
 
 void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 {
+	FVector currentLocation = GetActorLocation();
+	if (currentLocation.Y != 0)
+	{
+		SetActorLocation(FVector(currentLocation.X, 0.f, currentLocation.Z));
+	}
 	if (target) //Tik jei turim validu taikini, judesim link jo
 	{
 		if (!bIsAttacking)
@@ -107,7 +113,6 @@ void ABasicFlyingEnemy::MoveToTarget(float DeltaSeconds)
 	}
 	else if(!bIsAttacking) //Jei tokio neturim patruliuosim
 	{
-		FVector currentLocation = GetActorLocation();
 		//if (!FMath::IsNearlyEqual(currentLocation.Z, locationBeforeChase.Z, heightDifferenceAcceptance)) //Jei nesam tam paciam auksty
 		//{
 		//	//bIsMovingBack = true; //TODO: Dar sita palikti
@@ -203,9 +208,13 @@ void ABasicFlyingEnemy::Attack()
 	}
 }
 
-void ABasicFlyingEnemy::TakeDamage(int32 Damage)
+void ABasicFlyingEnemy::TakeDamage(AMainCharacter* Dealer)
 {
-	CurrentHealth -= Damage;
-	if (CurrentHealth <= 0) Destroy();
+	CurrentHealth -= Dealer->GetBaseDamage();
+	if (CurrentHealth <= 0)
+	{
+		Dealer->SetCurrency(Dealer->GetCurrency() + CurrencyLoot);
+		Destroy();
+	}
 }
 
