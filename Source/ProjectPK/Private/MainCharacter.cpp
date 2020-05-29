@@ -2,6 +2,10 @@
 
 
 #include "MainCharacter.h"
+//#include "Kismet/KismetSystemLibrary.h"
+//#include "Kismet/GameplayStatics.h"
+//#include "Engine/World.h"
+//#include "GameFramework/PlayerController.h"
 
 AMainCharacter::AMainCharacter()
 {
@@ -44,4 +48,13 @@ void AMainCharacter::SetCurrency(int32 CurrToSet)
 {
 	Currency = CurrToSet;
 }
+
+//void AMainCharacter::CallQuit()
+//{
+//	APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+//	if (PC)
+//	{
+//		UKismetSystemLibrary::QuitGame(GetWorld(), PC, EQuitPreference::Quit, false);
+//	}
+//}
 
