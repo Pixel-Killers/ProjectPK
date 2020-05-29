@@ -87,7 +87,7 @@ public:
     void NegateInterpolation(); //Skirtas nufalseinti interpoliacijos booli
 
     UFUNCTION(BlueprintCallable, Category = "CustomAI | Combat")
-    void TakeDamage(AMainCharacter* Dealer);
+    bool TakeDamage(AMainCharacter* Dealer);
 
     UFUNCTION()
     void Attack();
