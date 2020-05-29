@@ -33,6 +33,7 @@ ABasicFlyingEnemy::ABasicFlyingEnemy()
 	heightDifferenceAcceptance = 5.f;
 	patrolSpeed = 150.f;
 	BaseDamage = 20;
+	CurrentHealth = 100;
 	MaxHealth = 100;
 	CurrencyLoot = 15;
 }

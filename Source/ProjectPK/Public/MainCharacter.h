@@ -50,6 +50,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Combat")
     bool TakeDamage(int Damage);
 
+    //UFUNCTION(BlueprintCallable, Category = "Systematic")
+    //void CallQuit();
+
     int32 GetBaseDamage() const;
     int32 GetCurrency() const;
     void SetCurrency(int32 CurrToSet);
